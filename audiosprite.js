@@ -195,7 +195,7 @@ module.exports = function(files) {
     var additionalArgs = opts.ffmpegArgs(ext, outfile);
     
     spawn('ffmpeg',['-y', '-ar', opts.samplerate, '-ac', opts.channels, '-f', 's16le', '-i', src]
-      .concat(opt.additionalArgs(ext, outfile)).concat(opt).concat(outfile))
+      .concat(additionalArgs).concat(opt).concat(outfile))
       .on('exit', function(code, signal) {
         if (code) {
           return cb({
