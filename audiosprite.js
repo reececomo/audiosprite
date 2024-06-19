@@ -25,7 +25,8 @@ const defaults = {
     debug: function(){},
     info: function(){},
     log: function(){}
-  }
+  },
+  ffmpegArgs: (ext, outfile) => [],
 }
 
 module.exports = function(files) {
@@ -191,9 +192,10 @@ module.exports = function(files) {
   
   function exportFile(src, dest, ext, opt, store, cb) {
     var outfile = dest + '.' + ext;
+    var additionalArgs = opt.ffmpegArgs(ext, outfile);
     
     spawn('ffmpeg',['-y', '-ar', opts.samplerate, '-ac', opts.channels, '-f', 's16le', '-i', src]
-      .concat(opt).concat(outfile))
+      .concat(opt.additionalArgs(ext, outfile)).concat(opt).concat(outfile))
       .on('exit', function(code, signal) {
         if (code) {
           return cb({
