@@ -14,10 +14,10 @@ const defaults = {
   silence: 0,
   gap: 1,
   minlength: 0,
-  bitrate: 128,
+  bitrate: 64,
   vbr: -1,
   'vbr:vorbis': -1,
-  samplerate: 44100,
+  samplerate: 48000,
   channels: 1,
   rawparts: '',
   ignorerounding: 0,
@@ -26,7 +26,7 @@ const defaults = {
     info: function(){},
     log: function(){}
   },
-  ffmpegArgs: (ext, outfile) => [],
+  ffmpegOptions: (formatArgs, format, outfile) => [...formatArgs],
 }
 
 module.exports = function(files) {
@@ -192,10 +192,10 @@ module.exports = function(files) {
   
   function exportFile(src, dest, ext, opt, store, cb) {
     var outfile = dest + '.' + ext;
-    var additionalArgs = opts.ffmpegArgs ? opts.ffmpegArgs(ext, outfile) : [];
+    var overrideOpt = opts.ffmpegOptions ? opts.ffmpegOptions(opt, ext, outfile) : opt;
     
     spawn('ffmpeg',['-y', '-ar', opts.samplerate, '-ac', opts.channels, '-f', 's16le', '-i', src]
-      .concat(additionalArgs).concat(opt).concat(outfile))
+      .concat(overrideOpt).concat(outfile))
       .on('exit', function(code, signal) {
         if (code) {
           return cb({
